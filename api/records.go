@@ -12,13 +12,13 @@ func createRecord(rw http.ResponseWriter, req *http.Request) {
 	var resource sham.Resource
 	err := parseBody(req, &resource)
 	if err != nil {
-		writeBody(rw, req, apiError{err.Error()}, http.StatusBadRequest)
+		writeBody(rw, req, sham.ApiError{err.Error()}, http.StatusBadRequest)
 		return
 	}
 
 	err = shaman.AddRecord(&resource)
 	if err != nil {
-		writeBody(rw, req, apiError{err.Error()}, http.StatusInternalServerError)
+		writeBody(rw, req, sham.ApiError{err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
@@ -38,13 +38,13 @@ func updateAnswers(rw http.ResponseWriter, req *http.Request) {
 	resources := make([]sham.Resource, 0)
 	err := parseBody(req, &resources)
 	if err != nil {
-		writeBody(rw, req, apiError{err.Error()}, http.StatusBadRequest)
+		writeBody(rw, req, sham.ApiError{err.Error()}, http.StatusBadRequest)
 		return
 	}
 
 	err = shaman.ResetRecords(&resources)
 	if err != nil {
-		writeBody(rw, req, apiError{err.Error()}, http.StatusInternalServerError)
+		writeBody(rw, req, sham.ApiError{err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
@@ -55,7 +55,7 @@ func updateRecord(rw http.ResponseWriter, req *http.Request) {
 	var resource sham.Resource
 	err := parseBody(req, &resource)
 	if err != nil {
-		writeBody(rw, req, apiError{err.Error()}, http.StatusBadRequest)
+		writeBody(rw, req, sham.ApiError{err.Error()}, http.StatusBadRequest)
 		return
 	}
 
@@ -65,7 +65,7 @@ func updateRecord(rw http.ResponseWriter, req *http.Request) {
 		// create resource if not exist
 		err = shaman.AddRecord(&resource)
 		if err != nil {
-			writeBody(rw, req, apiError{err.Error()}, http.StatusInternalServerError)
+			writeBody(rw, req, sham.ApiError{err.Error()}, http.StatusInternalServerError)
 			return
 		}
 
@@ -76,7 +76,7 @@ func updateRecord(rw http.ResponseWriter, req *http.Request) {
 
 	err = shaman.UpdateRecord(domain, &resource)
 	if err != nil {
-		writeBody(rw, req, apiError{err.Error()}, http.StatusInternalServerError)
+		writeBody(rw, req, sham.ApiError{err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
@@ -88,7 +88,7 @@ func getRecord(rw http.ResponseWriter, req *http.Request) {
 
 	resource, err := shaman.GetRecord(domain)
 	if err != nil {
-		writeBody(rw, req, apiError{fmt.Sprintf("failed to find record for domain - '%v'", domain)}, http.StatusNotFound)
+		writeBody(rw, req, sham.ApiError{fmt.Sprintf("failed to find record for domain - '%v'", domain)}, http.StatusNotFound)
 		return
 	}
 
@@ -100,9 +100,9 @@ func deleteRecord(rw http.ResponseWriter, req *http.Request) {
 
 	err := shaman.DeleteRecord(domain)
 	if err != nil {
-		writeBody(rw, req, apiError{err.Error()}, http.StatusInternalServerError)
+		writeBody(rw, req, sham.ApiError{err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
-	writeBody(rw, req, apiMsg{"success"}, http.StatusOK)
+	writeBody(rw, req, sham.ApiMsg{"success"}, http.StatusOK)
 }

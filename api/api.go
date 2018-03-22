@@ -15,14 +15,7 @@ import (
 	"github.com/nanopack/shaman/config"
 )
 
-type (
-	apiError struct {
-		ErrorString string `json:"err"`
-	}
-	apiMsg struct {
-		MsgString string `json:"msg"`
-	}
-)
+
 
 var (
 	auth            nanoauth.Auth

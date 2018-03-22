@@ -21,6 +21,15 @@ type Record struct {
 	Address string `json:"address"` // address domain resolves to (216.58.217.46)
 }
 
+type (
+	ApiError struct {
+		ErrorString string `json:"err"`
+	}
+	ApiMsg struct {
+		MsgString string `json:"msg"`
+	}
+)
+
 // StringSlice returns a slice of strings with dns info, each ready for dns.NewRR
 func (self Resource) StringSlice() []string {
 	var records []string
