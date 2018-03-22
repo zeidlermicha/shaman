@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"reflect"
 	"github.com/google/go-querystring/query"
+	"time"
 )
 
 const (
@@ -31,7 +32,7 @@ type FullOption struct {
 
 func NewShamanClient(host string, token string) *ShamanClient {
 	return &ShamanClient{
-		httpClient: &http.Client{},
+		httpClient: &http.Client{Timeout:time.Second * 10},
 		host:       host,
 		token:      token,
 	}
@@ -150,8 +151,7 @@ func (c *ShamanClient) Do(req *http.Request, obj interface{}) (*http.Response, e
 	if e != nil {
 		return resp, errors.New(e.ErrorString)
 	}
-	// If obj implements the io.Writer,
-	// the response body is decoded into v.
+
 	if obj != nil {
 		if w, ok := obj.(io.Writer); ok {
 			io.Copy(w, resp.Body)
@@ -179,18 +179,15 @@ func checkResponse(resp *http.Response) (*sham.ApiError, error) {
 
 }
 
-// addOptions adds the parameters in opt as URL query parameters to s.  opt
-// must be a struct whose fields may contain "url" tags.
+
 func addURLQueryOptions(path string, options interface{}) (string, error) {
 	opt := reflect.ValueOf(options)
 
-	// options is a pointer
-	// return if the value of the pointer is nil,
+
 	if opt.Kind() == reflect.Ptr && opt.IsNil() {
 		return path, nil
 	}
 
-	// append the options to the URL
 	u, err := url.Parse(path)
 	if err != nil {
 		return path, err
@@ -202,7 +199,7 @@ func addURLQueryOptions(path string, options interface{}) (string, error) {
 	}
 
 	uqs := u.Query()
-	for k, _ := range qs {
+	for k := range qs {
 		uqs.Set(k, qs.Get(k))
 	}
 	u.RawQuery = uqs.Encode()
